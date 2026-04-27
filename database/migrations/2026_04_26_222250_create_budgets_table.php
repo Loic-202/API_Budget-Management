@@ -13,6 +13,12 @@ return new class extends Migration
     {
         Schema::create('budgets', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->decimal('montant_total', 10, 2);
+            $table->enum('periode', ['mensuel', 'annuel', 'hebdomadaire']);
+            $table->date('date_debut');
+            $table->date('date_fin')->nullable();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }

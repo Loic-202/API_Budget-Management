@@ -3,47 +3,50 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Depense;
 use Illuminate\Http\Request;
 
 class DepenseController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Liste toutes les dépenses de l'utilisateur connecté
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        return response()->json($request->user()->depenses);
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Enregistrer une nouvelle dépense
      */
     public function store(Request $request)
     {
-        //
+        // 1. Validation des données
+        $validated = $request->validate([
+            'titre' => 'required|string|max:255',
+            'montant' => 'required|numeric|min:0',
+            'date_depense' => 'required|date',
+            // On vérifie que la catégorie existe si elle est fournie
+            'categorie_id' => 'nullable|exists:categories,id',
+        ]);
+
+        // 2. Création liée à l'utilisateur connecté
+        $depense = $request->user()->depenses()->create($validated);
+
+        return response()->json([
+            'message' => 'Dépense enregistrée avec succès !',
+            'data' => $depense
+        ], 201);
     }
 
     /**
-     * Display the specified resource.
+     * Supprimer une dépense
      */
-    public function show(string $id)
+    public function destroy(Depense $depense)
     {
-        //
-    }
+        // On vérifie que la dépense appartient bien à l'utilisateur
+        $depense->delete();
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return response()->json(['message' => 'Dépense supprimée']);
     }
 }
