@@ -9,23 +9,24 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // Catégories par défaut — associées automatiquement
-        // à chaque nouvel utilisateur lors de l'inscription
         $categories = [
-            'Alimentation',
-            'Transport',
-            'Logement',
-            'Santé',
-            'Loisirs',
-            'Éducation',
-            'Vêtements',
-            'Factures',
+            ['nom' => 'Alimentation', 'icone' => '🍔'],
+            ['nom' => 'Transport', 'icone' => '🚌'],
+            ['nom' => 'Logement', 'icone' => '🏠'],
+            ['nom' => 'Santé', 'icone' => '💊'],
+            ['nom' => 'Loisirs', 'icone' => '🎉'],
+            ['nom' => 'Éducation', 'icone' => '📚'],
+            ['nom' => 'Vêtements', 'icone' => '👕'],
+            ['nom' => 'Factures', 'icone' => '🧾'],
         ];
 
-        foreach ($categories as $nom) {
-            Categorie::firstOrCreate(
-                ['nom' => $nom],
-                ['is_default' => true]
+        foreach ($categories as $category) {
+            Categorie::updateOrCreate(
+                ['nom' => $category['nom']],
+                [
+                    'icone' => $category['icone'],
+                    'is_default' => true,
+                ]
             );
         }
     }
