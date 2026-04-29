@@ -30,9 +30,10 @@ class BudgetController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'mois'  => 'required|integer|between:1,12',
-            'annee' => 'required|integer|min:2000|max:2100',
-            'notes' => 'nullable|string',
+            'mois'           => 'required|integer|between:1,12',
+            'annee'          => 'required|integer|min:2000|max:2100',
+            'montant_limite' => 'nullable|numeric|min:0',
+            'notes'          => 'nullable|string',
         ]);
 
         $budget = Budget::create([
@@ -65,9 +66,10 @@ class BudgetController extends Controller
         $this->authorise($request, $budget);
 
         $validated = $request->validate([
-            'mois'  => 'sometimes|integer|between:1,12',
-            'annee' => 'sometimes|integer|min:2000|max:2100',
-            'notes' => 'nullable|string',
+            'mois'           => 'sometimes|integer|between:1,12',
+            'annee'          => 'sometimes|integer|min:2000|max:2100',
+            'montant_limite' => 'nullable|numeric|min:0',
+            'notes'          => 'nullable|string',
         ]);
 
         $budget->update($validated);

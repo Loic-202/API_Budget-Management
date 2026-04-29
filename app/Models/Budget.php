@@ -12,14 +12,16 @@ class Budget extends Model
         'utilisateur_id',
         'mois',
         'annee',
+        'montant_limite',
         'notes',
     ];
 
     protected function casts(): array
     {
         return [
-            'mois'  => 'integer',
-            'annee' => 'integer',
+            'mois'           => 'integer',
+            'annee'          => 'integer',
+            'montant_limite' => 'decimal:2',
         ];
     }
 
