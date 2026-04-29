@@ -1,0 +1,539 @@
+{
+  "info": {
+    "name": "Budget Management API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:8000/api" },
+    { "key": "token",    "value": "" },
+    { "key": "budget_id",    "value": "1" },
+    { "key": "categorie_id", "value": "1" },
+    { "key": "depense_id",   "value": "1" },
+    { "key": "revenu_id",    "value": "1" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": "{{base_url}}/auth/register",
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\",\n  \"password_confirmation\": \"password123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.token) {",
+                  "  pm.collectionVariables.set('token', res.token);",
+                  "  console.log('Token sauvegardé:', res.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": "{{base_url}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Me (profil)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base_url}}/auth/me"
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base_url}}/auth/logout"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Catégories",
+      "item": [
+        {
+          "name": "Lister toutes les catégories",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base_url}}/categories"
+          }
+        },
+        {
+          "name": "Lister catégories de dépenses",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/categories?type=depense",
+              "query": [{ "key": "type", "value": "depense" }]
+            }
+          }
+        },
+        {
+          "name": "Lister catégories de revenus",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/categories?type=revenu",
+              "query": [{ "key": "type", "value": "revenu" }]
+            }
+          }
+        },
+        {
+          "name": "Créer une catégorie",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.id) pm.collectionVariables.set('categorie_id', res.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base_url}}/categories",
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"nom\": \"Abonnements\",\n  \"icone\": \"📺\",\n  \"couleur\": \"#8b5cf6\",\n  \"type\": \"depense\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Voir une catégorie",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base_url}}/categories/{{categorie_id}}"
+          }
+        },
+        {
+          "name": "Modifier une catégorie",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base_url}}/categories/{{categorie_id}}",
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"nom\": \"Streaming\",\n  \"couleur\": \"#ec4899\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Supprimer une catégorie",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base_url}}/categories/{{categorie_id}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Budgets",
+      "item": [
+        {
+          "name": "Lister mes budgets",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base_url}}/budgets"
+          }
+        },
+        {
+          "name": "Lister budgets par année",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/budgets?annee=2026",
+              "query": [{ "key": "annee", "value": "2026" }]
+            }
+          }
+        },
+        {
+          "name": "Créer un budget",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.id) pm.collectionVariables.set('budget_id', res.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base_url}}/budgets",
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"mois\": 4,\n  \"annee\": 2026,\n  \"notes\": \"Budget avril 2026\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Voir un budget (avec dépenses et revenus)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base_url}}/budgets/{{budget_id}}"
+          }
+        },
+        {
+          "name": "Modifier un budget",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base_url}}/budgets/{{budget_id}}",
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"notes\": \"Budget révisé\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Statistiques du budget",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base_url}}/budgets/{{budget_id}}/stats"
+          }
+        },
+        {
+          "name": "Définir un plafond par catégorie",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base_url}}/budgets/{{budget_id}}/limites",
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"categorie_id\": 1,\n  \"montant_limite\": 300.00\n}"
+            }
+          }
+        },
+        {
+          "name": "Supprimer un budget",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base_url}}/budgets/{{budget_id}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dépenses",
+      "item": [
+        {
+          "name": "Lister mes dépenses",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base_url}}/depenses"
+          }
+        },
+        {
+          "name": "Filtrer par budget",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/depenses?budget_id={{budget_id}}",
+              "query": [{ "key": "budget_id", "value": "{{budget_id}}" }]
+            }
+          }
+        },
+        {
+          "name": "Filtrer par catégorie et dates",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/depenses?categorie_id=1&date_debut=2026-04-01&date_fin=2026-04-30",
+              "query": [
+                { "key": "categorie_id", "value": "1" },
+                { "key": "date_debut",   "value": "2026-04-01" },
+                { "key": "date_fin",     "value": "2026-04-30" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Créer une dépense",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.id) pm.collectionVariables.set('depense_id', res.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base_url}}/depenses",
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"budget_id\": {{budget_id}},\n  \"categorie_id\": 1,\n  \"montant\": 85.50,\n  \"date\": \"2026-04-15\",\n  \"description\": \"Courses semaine\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Voir une dépense",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base_url}}/depenses/{{depense_id}}"
+          }
+        },
+        {
+          "name": "Modifier une dépense",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base_url}}/depenses/{{depense_id}}",
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"montant\": 92.00,\n  \"description\": \"Courses semaine (modifié)\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Supprimer une dépense",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base_url}}/depenses/{{depense_id}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Revenus",
+      "item": [
+        {
+          "name": "Lister mes revenus",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base_url}}/revenus"
+          }
+        },
+        {
+          "name": "Filtrer par budget",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/revenus?budget_id={{budget_id}}",
+              "query": [{ "key": "budget_id", "value": "{{budget_id}}" }]
+            }
+          }
+        },
+        {
+          "name": "Filtrer par dates",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/revenus?date_debut=2026-04-01&date_fin=2026-04-30",
+              "query": [
+                { "key": "date_debut", "value": "2026-04-01" },
+                { "key": "date_fin",   "value": "2026-04-30" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Créer un revenu",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.id) pm.collectionVariables.set('revenu_id', res.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base_url}}/revenus",
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"budget_id\": {{budget_id}},\n  \"montant\": 2500.00,\n  \"date\": \"2026-04-01\",\n  \"source\": \"Salaire\",\n  \"description\": \"Salaire du mois d'avril\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Voir un revenu",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base_url}}/revenus/{{revenu_id}}"
+          }
+        },
+        {
+          "name": "Modifier un revenu",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base_url}}/revenus/{{revenu_id}}",
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"montant\": 2700.00,\n  \"source\": \"Salaire + prime\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Supprimer un revenu",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Accept",        "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base_url}}/revenus/{{revenu_id}}"
+          }
+        }
+      ]
+    }
+  ]
+}

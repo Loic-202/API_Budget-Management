@@ -8,21 +8,19 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('revenus', function (Blueprint $table) {
+        Schema::create('budget_categories', function (Blueprint $table) {
             $table->id();
             $table->foreignId('budget_id')->constrained('budgets')->onDelete('cascade');
-            $table->decimal('montant', 10, 2);
-            $table->date('date');
-            $table->string('source', 150)->nullable();
-            $table->string('description', 255)->nullable();
+            $table->foreignId('categorie_id')->constrained('categories')->onDelete('cascade');
+            $table->decimal('montant_limite', 10, 2);
             $table->timestamps();
 
-            $table->index(['budget_id', 'date']);
+            $table->unique(['budget_id', 'categorie_id']);
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('revenus');
+        Schema::dropIfExists('budget_categories');
     }
 };

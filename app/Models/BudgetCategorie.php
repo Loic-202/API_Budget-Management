@@ -5,22 +5,20 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Depense extends Model
+class BudgetCategorie extends Model
 {
+    protected $table = 'budget_categories';
+
     protected $fillable = [
         'budget_id',
         'categorie_id',
-        'montant',
-        'date',
-        'description',
-        'justificatif',
+        'montant_limite',
     ];
 
     protected function casts(): array
     {
         return [
-            'montant' => 'decimal:2',
-            'date'    => 'date',
+            'montant_limite' => 'decimal:2',
         ];
     }
 
@@ -32,5 +30,17 @@ class Depense extends Model
     public function categorie(): BelongsTo
     {
         return $this->belongsTo(Categorie::class, 'categorie_id');
+    }
+
+    public function getMontantDepenseAttribute(): float
+    {
+        return (float) Depense::where('budget_id', $this->budget_id)
+            ->where('categorie_id', $this->categorie_id)
+            ->sum('montant');
+    }
+
+    public function getResteAttribute(): float
+    {
+        return (float) $this->montant_limite - $this->montant_depense;
     }
 }

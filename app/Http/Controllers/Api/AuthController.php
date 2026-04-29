@@ -17,26 +17,26 @@ class AuthController extends Controller
     {
         // Validation des données envoyées
         $validated = $request->validate([
-            'nom'            => 'required|string|max:100',
+            'name'            => 'required|string|max:100',
             'email'          => 'required|email|unique:users,email',
-            'mot_de_passe'   => 'required|string|min:6|confirmed',
+            'password'   => 'required|string|min:6|confirmed',
         ]);
 
         // Création de l'utilisateur
         $user = User::create([
-            'nom'          => $validated['nom'],
+            'name'          => $validated['name'],
             'email'        => $validated['email'],
-            'mot_de_passe' => $validated['mot_de_passe'],
+            'password' => $validated['password'],
         ]);
 
         // Associer automatiquement les catégories par défaut
         // à ce nouvel utilisateur
-        $categoriesParDefaut = Categorie::where('is_default', true)->get();
-        foreach ($categoriesParDefaut as $categorie) {
-            $user->userCategories()->create([
-                'categorie_id' => $categorie->id,
-            ]);
-        }
+        // $categoriesParDefaut = Categorie::where('is_default', true)->get();
+        // foreach ($categoriesParDefaut as $categorie) {
+        //     $user->userCategories()->create([
+        //         'categorie_id' => $categorie->id,
+        //     ]);
+        // }
 
         // Générer le token Sanctum
         $token = $user->createToken('auth_token')->plainTextToken;
@@ -54,14 +54,13 @@ class AuthController extends Controller
         // Validation des données envoyées
         $request->validate([
             'email'        => 'required|email',
-            'mot_de_passe' => 'required|string',
+            'password' => 'required|string',
         ]);
 
         // Vérifier si l'utilisateur existe
         $user = User::where('email', $request->email)->first();
-
         // Vérifier le mot de passe
-        if (!$user || !Hash::check($request->mot_de_passe, $user->mot_de_passe)) {
+        if (!$user || !Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
                 'email' => ['Email ou mot de passe incorrect.'],
             ]);

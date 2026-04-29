@@ -6,20 +6,21 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('budgets', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('utilisateur_id')->constrained('users')->onDelete('cascade');
+            $table->unsignedTinyInteger('mois');
+            $table->unsignedSmallInteger('annee');
+            $table->text('notes')->nullable();
             $table->timestamps();
+
+            $table->unique(['utilisateur_id', 'mois', 'annee']);
+            $table->index(['utilisateur_id', 'annee', 'mois']);
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('budgets');
