@@ -24,8 +24,9 @@ until php -r "
 done
 echo "MySQL disponible."
 
-# Appliquer les migrations
+# Appliquer les migrations et les seeders
 php artisan migrate --force
+php artisan db:seed --force
 
 # Optimiser le cache en production
 if [ "$APP_ENV" = "production" ]; then
